@@ -4,7 +4,7 @@ import { CreateAxiosOptions, RequestOptions, Result } from './types';
 
 import { cloneDeep } from 'lodash';
 import { ResultEnum } from '@/enums';
-import { isFunction } from './helper';
+import { isFunction } from '@/utils/is';
 
 export class HttpUtil {
   // axios实例

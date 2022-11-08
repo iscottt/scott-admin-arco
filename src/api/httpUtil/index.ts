@@ -3,10 +3,12 @@ import { AxiosTransform } from './axiosTransform';
 import qs from 'qs';
 import { checkStatus } from './checkStatus';
 import axios, { AxiosResponse } from 'axios';
-import { ContentTypeEnum, RequestOptions, Result, ResultEnum } from './types';
+import { RequestOptions, Result } from './types';
+import { ContentTypeEnum, ResultEnum } from '@/enums';
 import { Message } from '@arco-design/web-vue';
-import { downloadFile, isString, isObject } from './helper';
+import { downloadFile } from './helper';
 import { getToken } from '@/utils/auth';
+import { isString, isObject } from '@/utils/is';
 
 const transform: AxiosTransform = {
   // 请求前的一些处理
@@ -47,7 +49,9 @@ const transform: AxiosTransform = {
       }
       // 'a[]=b&a[]=c'
       if (!isParseToJson) {
-        config.params = qs.stringify(config.params, { arrayFormat: 'brackets' });
+        config.params = qs.stringify(config.params, {
+          arrayFormat: 'brackets',
+        });
         config.data = qs.stringify(config.data, { arrayFormat: 'brackets' });
       }
 
@@ -58,8 +62,17 @@ const transform: AxiosTransform = {
     return config;
   },
   // 处理请求数据
-  transformRequestData: (res: AxiosResponse<Result>, options: RequestOptions) => {
-    const { isTransformRequestResult, successMessageText, errorMessageText, isDownload, isShowMessage = false } = options;
+  transformRequestData: (
+    res: AxiosResponse<Result>,
+    options: RequestOptions
+  ) => {
+    const {
+      isTransformRequestResult,
+      successMessageText,
+      errorMessageText,
+      isDownload,
+      isShowMessage = false,
+    } = options;
     const reject = Promise.reject;
     const { data } = res;
     const { retCode, retData, retMessage } = data;
@@ -130,7 +143,10 @@ const transform: AxiosTransform = {
   // 响应错误拦截器
   responseInterceptorsCatch: async (error: any) => {
     const { response, code, message } = error || {};
-    const msg: string = response && response.data && response.data.error ? response.data.error.message : '';
+    const msg: string =
+      response && response.data && response.data.error
+        ? response.data.error.message
+        : '';
     const err: string = error.toString();
     try {
       if (code === 'ECONNABORTED' && message.indexOf('timeout') !== -1) {
